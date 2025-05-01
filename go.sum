@@ -6,6 +6,12 @@ github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0
 github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/Phanile/uretra_network v0.0.1 h1:fhdOX4orXAXgBjV9uvbOBX0syckG2UOA6ou3vuDadLw=
 github.com/Phanile/uretra_network v0.0.1/go.mod h1:8vEi1L78g3Z+uGtx5Q3Ura5pmWfjrKSxOX9JZ2BMNAE=
+github.com/Phanile/uretra_network v0.0.2 h1:OV4IDtZyVO0cwZ6J3GZWfUwju9x25+69p8mV4+UaKbk=
+github.com/Phanile/uretra_network v0.0.2/go.mod h1:8vEi1L78g3Z+uGtx5Q3Ura5pmWfjrKSxOX9JZ2BMNAE=
+github.com/Phanile/uretra_network v0.0.3 h1:SvG/oQU1zmN29Z6NAOFPGmigpFIsvDB7lHFwATt/wAo=
+github.com/Phanile/uretra_network v0.0.3/go.mod h1:8vEi1L78g3Z+uGtx5Q3Ura5pmWfjrKSxOX9JZ2BMNAE=
+github.com/Phanile/uretra_network v0.0.4 h1:JUDGmmXbaThtnXRRD4gwHXHrvc5DaBQvcdRJj+8bLao=
+github.com/Phanile/uretra_network v0.0.4/go.mod h1:8vEi1L78g3Z+uGtx5Q3Ura5pmWfjrKSxOX9JZ2BMNAE=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -27,6 +33,10 @@ github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71 h1:5BVwOaUSBTlVZowGO6VZGw
 github.com/go-gl/gl v0.0.0-20231021071112-07e5d0ea2e71/go.mod h1:9YTyiznxEY1fVinfM7RvRcjRHbw2xLBJ3AAGIT0I4Nw=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a h1:vxnBhFDDT+xzxf1jTJKMKZw3H0swfWk9RpWbBbDK5+0=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
+github.com/go-kit/log v0.2.1 h1:MRVx0/zhvdseW+Gza6N9rVzU/IVzaeE1SFI4raAhmBU=
+github.com/go-kit/log v0.2.1/go.mod h1:NwTd00d/i8cPZ3xOwwiv2PO5MOcx78fFErGNcVmBjv0=
+github.com/go-logfmt/logfmt v0.5.1 h1:otpy5pqBCBZ1ng9RQ0dPu4PN7ba75Y/aA+UpowDyNVA=
+github.com/go-logfmt/logfmt v0.5.1/go.mod h1:WYhtIu8zTZfxdn5+rREduYbwxfcBr/Vr6KEVveWlfTs=
 github.com/go-text/render v0.2.0 h1:LBYoTmp5jYiJ4NPqDc2pz17MLmA3wHw1dZSVGcOdeAc=
 github.com/go-text/render v0.2.0/go.mod h1:CkiqfukRGKJA5vZZISkjSYrcdtgKQWRa2HIzvwNN5SU=
 github.com/go-text/typesetting v0.2.1 h1:x0jMOGyO3d1qFAPI0j4GSsh7M0Q3Ypjzr4+CEVg82V8=

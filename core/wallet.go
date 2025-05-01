@@ -1,10 +1,13 @@
 package core
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"fyne.io/fyne/v2"
+	"github.com/Phanile/uretra_network/core"
 	"github.com/Phanile/uretra_network/crypto"
 	"github.com/Phanile/uretra_network/types"
 	"io"
@@ -13,8 +16,10 @@ import (
 
 const (
 	baseApiServerUrl = "http://192.168.3.2:3229"
-	coinValueUSD     = 3
+	coinValueUSD     = 4
 )
+
+var currentNonce uint64 = 1
 
 type GetBalanceResponse struct {
 	Balance uint64 `json:"balance"`
@@ -26,7 +31,6 @@ type Wallet struct {
 	PublicKey  crypto.PublicKey
 	Address    types.Address
 	Balance    uint64
-	Count      uint32
 }
 
 func NewWallet(prefs fyne.Preferences) *Wallet {
@@ -41,14 +45,38 @@ func NewWallet(prefs fyne.Preferences) *Wallet {
 			panic(errDecode)
 		}
 
-		w := &Wallet{
-			Address: types.AddressFromBytes(addrBytes),
+		privKeyPEM := prefs.String("wallet_private_key")
+		pubKeyPEM := prefs.String("wallet_public_key")
+
+		if privKeyPEM == "" {
+			panic("wallet_private_key is empty")
 		}
 
-		balance, errBalance := w.GetFormattedBalance()
+		if pubKeyPEM == "" {
+			panic("wallet_public_key is empty")
+		}
+
+		privKey, serializePrivateKeyErr := crypto.PrivateKeyFromBytes([]byte(privKeyPEM))
+		pubKey, serializePublicKeyErr := crypto.PublicKeyFromBytes([]byte(pubKeyPEM))
+
+		if serializePrivateKeyErr != nil {
+			panic(serializePrivateKeyErr)
+		}
+
+		if serializePublicKeyErr != nil {
+			panic(serializePublicKeyErr)
+		}
+
+		w := &Wallet{
+			Address:    types.AddressFromBytes(addrBytes),
+			PrivateKey: privKey,
+			PublicKey:  pubKey,
+		}
+
+		balance, errBalance := w.fetchBalanceFromAPI()
 
 		if errBalance != nil {
-			fmt.Println(errBalance)
+			w.Balance = 0
 		}
 
 		w.Balance = balance
@@ -56,26 +84,24 @@ func NewWallet(prefs fyne.Preferences) *Wallet {
 		return w
 	}
 
-	wallet := &Wallet{
-		PrivateKey: crypto.GeneratePrivateKey(),
-	}
+	privKey := crypto.GeneratePrivateKey()
+	pubKey := privKey.PublicKey()
 
-	wallet.PublicKey = wallet.PrivateKey.PublicKey()
-	wallet.Address = wallet.PublicKey.Address()
-	prefs.SetString("wallet_address", wallet.Address.String())
+	privKeyBytes, _ := privKey.Bytes()
+	pubKeyBytes, _ := pubKey.Bytes()
+
+	prefs.SetString("wallet_address", pubKey.Address().String())
+	prefs.SetString("wallet_private_key", string(privKeyBytes))
+	prefs.SetString("wallet_public_key", string(pubKeyBytes))
+
+	wallet := &Wallet{
+		PrivateKey: privKey,
+		PublicKey:  pubKey,
+		Address:    pubKey.Address(),
+		Balance:    0,
+	}
 
 	return wallet
-}
-
-func (w *Wallet) GetFormattedBalance() (uint64, error) {
-	balance, err := w.fetchBalanceFromAPI()
-	if err != nil {
-		return 0, fmt.Errorf("failed to get balance: %v", err)
-	}
-
-	usdAmount := uint64(balance) * coinValueUSD
-
-	return usdAmount, nil
 }
 
 func (w *Wallet) fetchBalanceFromAPI() (uint64, error) {
@@ -106,4 +132,52 @@ func (w *Wallet) fetchBalanceFromAPI() (uint64, error) {
 	}
 
 	return apiResponse.Balance, nil
+}
+
+func (w *Wallet) GetFormattedAddress() string {
+	return w.Address.String()[:5] + "..." + w.Address.String()[len(w.Address.String())-5:]
+}
+
+func (w *Wallet) SendTransaction(address string, amount uint64) error {
+	if w.Balance < amount {
+		return fmt.Errorf("wallet balance too small")
+	}
+
+	addrBytes, _ := hex.DecodeString(address)
+
+	tx := core.NewTransaction(
+		nil,
+		w.PublicKey,
+		types.AddressFromBytes(addrBytes),
+		amount,
+		currentNonce,
+	)
+
+	_ = tx.Sign(w.PrivateKey)
+
+	if !tx.Verify() {
+		return fmt.Errorf("invalid signature")
+	}
+
+	currentNonce++
+
+	buf := &bytes.Buffer{}
+
+	err := gob.NewEncoder(buf).Encode(tx)
+	if err != nil {
+		return err
+	}
+
+	url := fmt.Sprintf("%s/tx", baseApiServerUrl)
+	resp, errResp := http.Post(url, "application/octet-stream", buf)
+	if errResp != nil {
+		return errResp
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("API returned status: %s", resp.Status)
+	}
+
+	return nil
 }
